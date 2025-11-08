@@ -18,9 +18,9 @@ export default function Footer() {
           <div>
             <div className="flex items-center gap-2 mb-4">
               <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">RS</span>
+                <span className="text-white font-bold text-sm">SI</span>
               </div>
-              <span className="font-bold text-lg">ResumeMatch</span>
+              <span className="font-bold text-lg">SkillIssue</span>
             </div>
             <p className="text-background/70 text-sm">AI-powered resume screening for smarter hiring decisions.</p>
           </div>
@@ -30,17 +30,17 @@ export default function Footer() {
             <h4 className="font-semibold mb-4">Product</h4>
             <ul className="space-y-2 text-sm text-background/70">
               <li>
-                <button onClick={() => scrollToSection("features")} className="hover:text-background transition">
+                <button onClick={() => scrollToSection("features")} className="hover:text-background transition cursor-pointer">
                   Features
                 </button>
               </li>
               <li>
-                <a href="#" className="hover:text-background transition">
+                <a href="#" className="hover:text-background transition cursor-pointer">
                   Security
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-background transition">
+                <a href="#" className="hover:text-background transition cursor-pointer">
                   Roadmap
                 </a>
               </li>
@@ -53,25 +53,25 @@ export default function Footer() {
             <div className="flex gap-4">
               <a
                 href="#"
-                className="w-10 h-10 bg-background/10 rounded-lg flex items-center justify-center hover:bg-background/20 transition"
+                className="w-10 h-10 bg-background/10 rounded-lg flex items-center justify-center hover:bg-background/20 transition cursor-pointer"
               >
                 <Github size={20} />
               </a>
               <a
                 href="#"
-                className="w-10 h-10 bg-background/10 rounded-lg flex items-center justify-center hover:bg-background/20 transition"
+                className="w-10 h-10 bg-background/10 rounded-lg flex items-center justify-center hover:bg-background/20 transition cursor-pointer"
               >
                 <Linkedin size={20} />
               </a>
               <a
                 href="#"
-                className="w-10 h-10 bg-background/10 rounded-lg flex items-center justify-center hover:bg-background/20 transition"
+                className="w-10 h-10 bg-background/10 rounded-lg flex items-center justify-center hover:bg-background/20 transition cursor-pointer"
               >
                 <Twitter size={20} />
               </a>
               <a
                 href="#"
-                className="w-10 h-10 bg-background/10 rounded-lg flex items-center justify-center hover:bg-background/20 transition"
+                className="w-10 h-10 bg-background/10 rounded-lg flex items-center justify-center hover:bg-background/20 transition cursor-pointer"
               >
                 <Mail size={20} />
               </a>
@@ -81,12 +81,12 @@ export default function Footer() {
 
         {/* Bottom */}
         <div className="border-t border-background/20 pt-8 flex flex-col sm:flex-row justify-between items-center text-sm text-background/70">
-          <p>&copy; 2025 ResumeMatch. All rights reserved.</p>
+          <p>&copy; 2025 SkillIssue. All rights reserved.</p>
           <div className="flex gap-6 mt-4 sm:mt-0">
-            <a href="#" className="hover:text-background transition">
+            <a href="#" className="hover:text-background transition cursor-pointer">
               Privacy Policy
             </a>
-            <a href="#" className="hover:text-background transition">
+            <a href="#" className="hover:text-background transition cursor-pointer">
               Terms of Service
             </a>
           </div>

@@ -3,6 +3,13 @@
 import Link from "next/link"
 
 export default function HeroSection({ onGetStarted }: { onGetStarted: () => void }) {
+  const scrollToMatch = () => {
+    const element = document.getElementById("match")
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" })
+    }
+  }
+
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-primary via-secondary to-primary/80 py-20 sm:py-32">
       <div className="absolute inset-0 overflow-hidden">
@@ -32,14 +39,14 @@ export default function HeroSection({ onGetStarted }: { onGetStarted: () => void
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
             <button
-              onClick={onGetStarted}
-              className="px-8 py-3 rounded-lg bg-white text-primary font-semibold hover:shadow-2xl hover:shadow-white/20 transition-all duration-300 hover:scale-105"
+              onClick={scrollToMatch}
+              className="px-8 py-3 rounded-lg bg-white text-primary font-semibold hover:shadow-2xl hover:shadow-white/20 transition-all duration-300 hover:scale-105 cursor-pointer"
             >
               Start Matching
             </button>
             <Link
               href="/docs"
-              className="px-8 py-3 rounded-lg border-2 border-white text-white font-semibold hover:bg-white/10 transition-all duration-300 inline-block text-center"
+              className="px-8 py-3 rounded-lg border-2 border-white text-white font-semibold hover:bg-white/10 transition-all duration-300 inline-block text-center cursor-pointer"
             >
               View Demo
             </Link>

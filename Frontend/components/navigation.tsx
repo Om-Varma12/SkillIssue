@@ -22,51 +22,53 @@ export default function Navigation() {
           {/* Logo */}
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">RS</span>
+              <span className="text-white font-bold text-sm">SI</span>
             </div>
-            <span className="font-bold text-lg text-foreground hidden sm:inline">ResumeMatch</span>
+            <span className="font-bold text-lg text-foreground hidden sm:inline">SkillIssue</span>
           </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
             <button
               onClick={() => scrollToSection("hero")}
-              className="text-sm text-muted-foreground hover:text-foreground transition"
+              className="text-sm text-muted-foreground hover:text-foreground transition cursor-pointer"
             >
               Home
             </button>
             <button
               onClick={() => scrollToSection("about")}
-              className="text-sm text-muted-foreground hover:text-foreground transition"
+              className="text-sm text-muted-foreground hover:text-foreground transition cursor-pointer"
             >
               About
             </button>
             <button
               onClick={() => scrollToSection("how-it-works")}
-              className="text-sm text-muted-foreground hover:text-foreground transition"
+              className="text-sm text-muted-foreground hover:text-foreground transition cursor-pointer"
             >
               How It Works
             </button>
             <button
               onClick={() => scrollToSection("features")}
-              className="text-sm text-muted-foreground hover:text-foreground transition"
+              className="text-sm text-muted-foreground hover:text-foreground transition cursor-pointer"
             >
               Features
             </button>
-            <Link href="/docs" className="text-sm text-muted-foreground hover:text-foreground transition">
+            <Link href="/docs" className="text-sm text-muted-foreground hover:text-foreground transition cursor-pointer">
               Docs
             </Link>
           </div>
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
-            <button className="px-6 py-2 rounded-lg bg-primary text-primary-foreground font-medium hover:shadow-lg hover:shadow-primary/20 transition-all duration-300">
-              Get Started
-            </button>
+            <Link href="/docs">
+              <button className="px-6 py-2 rounded-lg bg-primary text-primary-foreground font-medium hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 cursor-pointer">
+                Get Started
+              </button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
-          <button onClick={() => setIsOpen(!isOpen)} className="md:hidden p-2 hover:bg-muted rounded-lg transition">
+          <button onClick={() => setIsOpen(!isOpen)} className="md:hidden p-2 hover:bg-muted rounded-lg transition cursor-pointer">
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
@@ -76,37 +78,39 @@ export default function Navigation() {
           <div className="md:hidden pb-4 space-y-3 animate-slide-up">
             <button
               onClick={() => scrollToSection("hero")}
-              className="block w-full text-left text-sm text-muted-foreground hover:text-foreground transition py-2"
+              className="block w-full text-left text-sm text-muted-foreground hover:text-foreground transition py-2 cursor-pointer"
             >
               Home
             </button>
             <button
               onClick={() => scrollToSection("about")}
-              className="block w-full text-left text-sm text-muted-foreground hover:text-foreground transition py-2"
+              className="block w-full text-left text-sm text-muted-foreground hover:text-foreground transition py-2 cursor-pointer"
             >
               About
             </button>
             <button
               onClick={() => scrollToSection("how-it-works")}
-              className="block w-full text-left text-sm text-muted-foreground hover:text-foreground transition py-2"
+              className="block w-full text-left text-sm text-muted-foreground hover:text-foreground transition py-2 cursor-pointer"
             >
               How It Works
             </button>
             <button
               onClick={() => scrollToSection("features")}
-              className="block w-full text-left text-sm text-muted-foreground hover:text-foreground transition py-2"
+              className="block w-full text-left text-sm text-muted-foreground hover:text-foreground transition py-2 cursor-pointer"
             >
               Features
             </button>
             <Link
               href="/docs"
-              className="block w-full text-left text-sm text-muted-foreground hover:text-foreground transition py-2"
+              className="block w-full text-left text-sm text-muted-foreground hover:text-foreground transition py-2 cursor-pointer"
             >
               Docs
             </Link>
-            <button className="w-full px-6 py-2 rounded-lg bg-primary text-primary-foreground font-medium hover:shadow-lg transition-all duration-300">
-              Get Started
-            </button>
+            <Link href="/docs" className="block">
+              <button className="w-full px-6 py-2 rounded-lg bg-primary text-primary-foreground font-medium hover:shadow-lg transition-all duration-300 cursor-pointer">
+                Get Started
+              </button>
+            </Link>
           </div>
         )}
       </div>
