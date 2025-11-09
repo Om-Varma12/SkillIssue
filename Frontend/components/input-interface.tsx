@@ -63,27 +63,23 @@ export default function InputInterface({ onAnalyze }: { onAnalyze: () => void })
     setIsLoading(true)
 
     try {
-      // Create FormData to send to Flask backend
+      // Create FormData to send file and job description
       const formData = new FormData()
       formData.append("resume", resumeFile)
       formData.append("jobDescription", jobDescription)
 
-      // Send to Flask backend (adjust URL to your Flask server)
-      const response = await fetch("http://localhost:5000/api/analyze", {
+      // Send to backend API
+      const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
       })
 
       if (!response.ok) {
-        throw new Error("Failed to analyze resume")
+        throw new Error("Failed to upload files")
       }
 
       const result = await response.json()
-      showNotification("Analysis complete!", "success")
-      
-      // Store the analysis result for the results dashboard
-      // You can use localStorage or state management
-      localStorage.setItem("analysisResult", JSON.stringify(result))
+      showNotification("Files saved successfully!", "success")
       
       setTimeout(() => {
         setIsLoading(false)
@@ -91,8 +87,8 @@ export default function InputInterface({ onAnalyze }: { onAnalyze: () => void })
       }, 1000)
     } catch (error) {
       setIsLoading(false)
-      showNotification("Error analyzing resume. Please try again.", "error")
-      console.error("Analysis error:", error)
+      showNotification("Error uploading files. Please try again.", "error")
+      console.error("Upload error:", error)
     }
   }
 
