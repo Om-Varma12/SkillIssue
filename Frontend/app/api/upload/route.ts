@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
 
     // Get the project root directory (3 levels up from app/api/upload)
     const projectRoot = path.join(process.cwd(), "..")
-    const assetsDir = path.join(projectRoot, "assets")
+    const assetsDir = path.join(projectRoot, "backend", "assets")
 
     // Create assets directory if it doesn't exist
     if (!existsSync(assetsDir)) {
