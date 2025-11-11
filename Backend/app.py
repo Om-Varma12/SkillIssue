@@ -1,57 +1,130 @@
-import os
+"""
+Main Flask Application - Entry Point
+Handles API endpoints and request routing
+"""
+
+from flask import Flask, request, jsonify
 from pathlib import Path
-from flask import Flask, jsonify, request
+import sys
 
-from services.matcher_service import process_resume_jobdesc
-from utils.file_utils import read_file_content
+# Add backend to path for imports
+backend_dir = Path(__file__).parent
+sys.path.insert(0, str(backend_dir))
 
-# create app
+from services.matcher_service import MatcherService
+from utils.file_utils import FileUtils
+from instance.config import Config
+
 app = Flask(__name__)
+app.config.from_object(Config)
 
-# determine project root and assets path (assets is sibling to backend)
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-ASSETS_PATH = PROJECT_ROOT / "assets"
+# Initialize services
+file_utils = FileUtils()
+matcher_service = MatcherService()
 
-@app.route("/", methods=["GET"])
-def hello():
-    return jsonify({"status": "SkillIssue backend running", "assets_path": str(ASSETS_PATH)})
 
-@app.route("/analyze", methods=["POST"])
-def analyze():
+@app.route('/health', methods=['GET'])
+def health_check():
+    """Health check endpoint"""
+    return jsonify({
+        "status": "healthy",
+        "service": "ATS Resume Matcher API",
+        "version": "1.0.0"
+    })
+
+
+@app.route('/analyze', methods=['POST'])
+def analyze_resume():
     """
-    Default behavior:
-      - If no form data provided, will attempt to read:
-            assets/resume.txt  and assets/job.txt
-      - Or provide form data: resume_path and jd_path (relative or absolute)
+    Main endpoint for resume analysis
+    Accepts either file paths or uploaded files
     """
     try:
-        # Decide which files to read
-        resume_path = request.form.get("resume_path")
-        jd_path = request.form.get("jd_path")
-
-        if resume_path and jd_path:
-            resume_file = Path(resume_path)
-            jd_file = Path(jd_path)
+        # Option 1: Using file paths from assets/
+        if request.json and 'use_assets' in request.json:
+            # Use default files from assets
+            assets_dir = Path(app.config['ASSETS_DIR'])
+            
+            # Find resume file
+            resume_path = None
+            for ext in ['.pdf', '.txt']:
+                candidate = assets_dir / f"resume{ext}"
+                if candidate.exists():
+                    resume_path = str(candidate)
+                    break
+            
+            jd_path = str(assets_dir / "job.txt")
+            
+            if not resume_path or not Path(jd_path).exists():
+                return jsonify({
+                    "error": "Resume or job description not found in assets/"
+                }), 404
+            
+            # Extract text
+            resume_text = file_utils.read_file(resume_path)
+            jd_text = file_utils.read_file(jd_path)
+        
+        # Option 2: File upload (for future enhancement)
+        elif 'resume' in request.files and 'job_description' in request.files:
+            resume_file = request.files['resume']
+            jd_file = request.files['job_description']
+            
+            # Save temporarily and read
+            resume_path = Path(app.config['UPLOAD_FOLDER']) / resume_file.filename
+            jd_path = Path(app.config['UPLOAD_FOLDER']) / jd_file.filename
+            
+            resume_file.save(resume_path)
+            jd_file.save(jd_path)
+            
+            resume_text = file_utils.read_file(str(resume_path))
+            jd_text = file_utils.read_file(str(jd_path))
+        
         else:
-            # default filenames in sibling assets folder
-            resume_file = ASSETS_PATH / "resume.txt"
-            jd_file = ASSETS_PATH / "job.txt"
-
-        # Make sure files exist
-        if not resume_file.exists():
-            return jsonify({"error": f"Resume file not found: {resume_file}"}), 400
-        if not jd_file.exists():
-            return jsonify({"error": f"JD file not found: {jd_file}"}), 400
-
-        resume_text = read_file_content(str(resume_file))
-        jd_text = read_file_content(str(jd_file))
-
-        result = process_resume_jobdesc(resume_text, jd_text)
-        return jsonify(result)
-
+            return jsonify({
+                "error": "Please provide either 'use_assets': true or upload files"
+            }), 400
+        
+        # Validate text extraction
+        if not resume_text or not jd_text:
+            return jsonify({
+                "error": "Failed to extract text from files"
+            }), 400
+        
+        # Run analysis
+        results = matcher_service.analyze(resume_text, jd_text)
+        
+        return jsonify(results), 200
+    
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({
+            "error": str(e),
+            "type": type(e).__name__
+        }), 500
 
-if __name__ == "__main__":
-    # run with debug for quick tests; set debug=False in production
-    app.run(host="0.0.0.0", port=5000, debug=True)
+
+@app.route('/analyze/quick', methods=['POST'])
+def quick_analyze():
+    """
+    Quick analysis endpoint for testing
+    Uses files from assets/ directory
+    """
+    try:
+        results = matcher_service.analyze_from_assets()
+        return jsonify(results), 200
+    
+    except Exception as e:
+        return jsonify({
+            "error": str(e),
+            "type": type(e).__name__
+        }), 500
+
+
+if __name__ == '__main__':
+    # Create necessary directories
+    Path(app.config['UPLOAD_FOLDER']).mkdir(parents=True, exist_ok=True)
+    
+    app.run(
+        host='0.0.0.0',
+        port=5000,
+        debug=app.config['DEBUG']
+    )

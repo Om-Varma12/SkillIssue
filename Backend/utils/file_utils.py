@@ -1,49 +1,69 @@
+"""
+File Utilities
+Handles reading PDF and text files
+"""
+
+import os
 from pathlib import Path
-from PyPDF2 import PdfReader
-from docx import Document
+from typing import Optional
 
-def read_file_content(file_path: str) -> str:
-    """
-    Reads the content of a file.
-    Supports TXT, PDF, DOCX formats.
-    """
-    p = Path(file_path)
-    if not p.exists():
-        raise FileNotFoundError(f"File not found: {file_path}")
-
-    ext = p.suffix.lower()
-    text = ""
-
-    if ext == ".txt":
-        text = p.read_text(encoding="utf-8", errors="ignore")
-
-    elif ext == ".pdf":
-        text = read_pdf(p)
-
-    elif ext in [".docx", ".doc"]:
-        text = read_docx(p)
-
-    else:
-        raise ValueError(f"Unsupported file format: {ext}")
-
-    return text.strip()
+try:
+    import pdfplumber
+except ImportError:
+    os.system('pip install pdfplumber')
+    import pdfplumber
 
 
-def read_pdf(path: Path) -> str:
-    """
-    Extracts text from a PDF file.
-    """
-    text = ""
-    with open(path, "rb") as f:
-        reader = PdfReader(f)
-        for page in reader.pages:
-            text += page.extract_text() or ""
-    return text
-
-
-def read_docx(path: Path) -> str:
-    """
-    Extracts text from a DOCX file.
-    """
-    doc = Document(path)
-    return "\n".join(p.text for p in doc.paragraphs)
+class FileUtils:
+    """Utility class for file operations"""
+    
+    @staticmethod
+    def read_file(file_path: str) -> Optional[str]:
+        """
+        Read file based on extension
+        Supports .pdf and .txt files
+        """
+        path = Path(file_path)
+        
+        if not path.exists():
+            return None
+        
+        if path.suffix.lower() == '.pdf':
+            return FileUtils.extract_text_from_pdf(str(path))
+        else:
+            return FileUtils.read_text_file(str(path))
+    
+    @staticmethod
+    def extract_text_from_pdf(pdf_path: str) -> Optional[str]:
+        """Extract text from PDF file using pdfplumber"""
+        text = ""
+        try:
+            with pdfplumber.open(pdf_path) as pdf:
+                for page in pdf.pages:
+                    page_text = page.extract_text()
+                    if page_text:
+                        text += page_text + "\n"
+            return text.strip() if text else None
+        except Exception as e:
+            print(f"Error reading PDF: {e}")
+            return None
+    
+    @staticmethod
+    def read_text_file(file_path: str) -> Optional[str]:
+        """Read plain text file"""
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                text = f.read()
+            return text.strip() if text else None
+        except Exception as e:
+            print(f"Error reading text file: {e}")
+            return None
+    
+    @staticmethod
+    def find_resume_in_assets(assets_dir: Path) -> Optional[Path]:
+        """Find resume file in assets directory"""
+        for ext in ['.pdf', '.txt', '.docx']:
+            candidate = assets_dir / f"resume{ext}"
+            if candidate.exists():
+                return candidate
+        return None
