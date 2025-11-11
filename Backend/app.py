@@ -6,6 +6,8 @@ Handles API endpoints and request routing
 from flask import Flask, request, jsonify
 from pathlib import Path
 import sys
+from flask_cors import CORS
+
 
 # Add backend to path for imports
 backend_dir = Path(__file__).parent
@@ -17,6 +19,7 @@ from instance.config import Config
 
 app = Flask(__name__)
 app.config.from_object(Config)
+CORS(app)
 
 # Initialize services
 file_utils = FileUtils()
