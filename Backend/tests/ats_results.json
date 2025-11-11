@@ -1,0 +1,69 @@
+{
+  "skill_match_score_percent": 61.81,
+  "experience_match_score_percent": 100.0,
+  "keywords": {
+    "matched": [
+      "learn",
+      "data",
+      "project",
+      "model",
+      "learning",
+      "deploy",
+      "scikit"
+    ],
+    "missing": [
+      "end",
+      "system",
+      "full",
+      "systems",
+      "work",
+      "into",
+      "end-to-end"
+    ]
+  },
+  "experience": {
+    "required_years": 2,
+    "candidate_years": 1
+  },
+  "relevant_experience_highlights": [
+    "3 Experience AI   ML Engineer Pune Self-Employed 2024 - Present   Created AI-powered and data-driven applications as part of independent learning and portfolio development",
+    "Technologies Used  React (TypeScript), Flask, Python, Scikit-learn, MySQL Certification Machine Learning Specialization - Coursera (Dec 2025 )   Skills Gained  Built and trained ML   DL models using NumPy, Scikit-learn, and TensorFlow",
+    "Core Concepts  Python, NumPy, Pandas, Matplotlib, Scikit-learn, TensorFlow Additional Technical Skills  JavaScript, Python, React (TypeScript), Flask, Scikit-learn, TensorFlow, MySQL, Git, HTML, CSS Academic Achievements   Secured top position in AI/ML project showcase and completed advanced ML certifications",
+    "Core Concepts  Python, NumPy, Pandas, Scikit-learn, TensorFlow, Matplotlib Data Science, Machine Learning and Neural Networks - Udemy (Oct 2025 )   Skills Gained  Applied data preprocessing, ML algorithms, and neural networks for predictive analysis",
+    "Technologies Used  React (TypeScript), Flask, Python, Scikit-learn CarePoint (Oct 2025 - Oct 2025)   Description  AI-powered chatbot platform providing real-time help for healthcare, college queries, and emergencies"
+  ],
+  "ats": {
+    "score_percent": 42.7,
+    "label": "Fair"
+  },
+  "top_resume_keywords": [
+    "python",
+    "scikit",
+    "learn",
+    "scikit learn",
+    "data",
+    "oct",
+    "learning",
+    "real",
+    "skills",
+    "react",
+    "typescript",
+    "flask",
+    "tensorflow",
+    "react typescript",
+    "typescript flask",
+    "react typescript flask",
+    "com",
+    "machine",
+    "description",
+    "time"
+  ],
+  "section_match_analysis": {
+    "education": "Not Matched",
+    "certifications": "Not Matched",
+    "skills": "Not Matched",
+    "experience": "Not Matched",
+    "soft_skills": "Not Matched"
+  },
+  "overall_match_percent": 63.33
+}
