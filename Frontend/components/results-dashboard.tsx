@@ -3,7 +3,37 @@ import { ArrowLeft, Download, Share2, Save } from "lucide-react"
 import MatchScoreCard from "./match-score-card"
 import AnalysisTabs from "./analysis-tabs"
 
-export default function ResultsDashboard({ score, onNewAnalysis }: { score: number; onNewAnalysis: () => void }) {
+interface AnalysisResult {
+  overall_match_percent: number
+  skill_match_score_percent: number
+  experience_match_score_percent: number
+  keywords: {
+    matched: string[]
+    missing: string[]
+  }
+  experience: {
+    required_years: number
+    candidate_years: number
+  }
+  relevant_experience_highlights: string[]
+  ats: {
+    score_percent: number
+    label: string
+  }
+  top_resume_keywords: string[]
+  section_match_analysis: {
+    education: string
+    certifications: string
+    skills: string
+    experience: string
+    soft_skills: string
+  }
+}
+
+export default function ResultsDashboard({ analysisData, onNewAnalysis }: { 
+  analysisData: AnalysisResult; 
+  onNewAnalysis: () => void 
+}) {
   return (
     <section className="py-16 sm:py-24 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -18,12 +48,12 @@ export default function ResultsDashboard({ score, onNewAnalysis }: { score: numb
 
         {/* Match Score Card */}
         <div className="mb-12 animate-slide-up">
-          <MatchScoreCard score={score} />
+          <MatchScoreCard analysisData={analysisData} />
         </div>
 
         {/* Analysis Tabs */}
         <div className="mb-12 animate-slide-up" style={{ animationDelay: "0.2s" }}>
-          <AnalysisTabs />
+          <AnalysisTabs analysisData={analysisData} />
         </div>
 
         {/* Action Cards */}

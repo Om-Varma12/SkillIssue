@@ -9,6 +9,33 @@ import FeaturesGrid from "@/components/features-grid"
 import HowItWorks from "@/components/how-it-works"
 import Footer from "@/components/footer"
 
+interface AnalysisResult {
+  overall_match_percent: number
+  skill_match_score_percent: number
+  experience_match_score_percent: number
+  keywords: {
+    matched: string[]
+    missing: string[]
+  }
+  experience: {
+    required_years: number
+    candidate_years: number
+  }
+  relevant_experience_highlights: string[]
+  ats: {
+    score_percent: number
+    label: string
+  }
+  top_resume_keywords: string[]
+  section_match_analysis: {
+    education: string
+    certifications: string
+    skills: string
+    experience: string
+    soft_skills: string
+  }
+}
+
 function AboutSection() {
   return (
     <section id="about" className="py-20 bg-muted/30">
@@ -49,10 +76,10 @@ function AboutSection() {
 
 export default function Home() {
   const [showResults, setShowResults] = useState(false)
-  const [matchScore, setMatchScore] = useState(0)
+  const [analysisData, setAnalysisData] = useState<AnalysisResult | null>(null)
 
-  const handleAnalyze = () => {
-    setMatchScore(Math.floor(Math.random() * 40) + 60)
+  const handleAnalyze = (data: AnalysisResult) => {
+    setAnalysisData(data)
     setShowResults(true)
   }
 
@@ -75,7 +102,10 @@ export default function Home() {
           <InputInterface onAnalyze={handleAnalyze} />
         </>
       ) : (
-        <ResultsDashboard score={matchScore} onNewAnalysis={() => setShowResults(false)} />
+        <ResultsDashboard 
+          analysisData={analysisData!} 
+          onNewAnalysis={() => setShowResults(false)} 
+        />
       )}
 
       <Footer />

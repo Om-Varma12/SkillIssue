@@ -3,7 +3,34 @@
 import { useState, useRef } from "react"
 import { Upload, FileText, Loader2, X } from "lucide-react"
 
-export default function InputInterface({ onAnalyze }: { onAnalyze: () => void }) {
+interface AnalysisResult {
+  overall_match_percent: number
+  skill_match_score_percent: number
+  experience_match_score_percent: number
+  keywords: {
+    matched: string[]
+    missing: string[]
+  }
+  experience: {
+    required_years: number
+    candidate_years: number
+  }
+  relevant_experience_highlights: string[]
+  ats: {
+    score_percent: number
+    label: string
+  }
+  top_resume_keywords: string[]
+  section_match_analysis: {
+    education: string
+    certifications: string
+    skills: string
+    experience: string
+    soft_skills: string
+  }
+}
+
+export default function InputInterface({ onAnalyze }: { onAnalyze: (data: AnalysisResult) => void }) {
   const [isLoading, setIsLoading] = useState(false)
   const [resumeFile, setResumeFile] = useState<File | null>(null)
   const [jobDescription, setJobDescription] = useState("")
@@ -68,27 +95,40 @@ export default function InputInterface({ onAnalyze }: { onAnalyze: () => void })
       formData.append("resume", resumeFile)
       formData.append("jobDescription", jobDescription)
 
-      // Send to backend API
-      const response = await fetch("/api/upload", {
+      // Send to backend API to save files
+      const uploadResponse = await fetch("/api/upload", {
         method: "POST",
         body: formData,
       })
 
-      if (!response.ok) {
+      if (!uploadResponse.ok) {
         throw new Error("Failed to upload files")
       }
 
-      const result = await response.json()
-      showNotification("Files saved successfully!", "success")
+      // Now call Flask backend for analysis
+      const flaskResponse = await fetch("http://127.0.0.1:5000/analyze", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+
+      if (!flaskResponse.ok) {
+        throw new Error("Failed to analyze resume")
+      }
+
+      const analysisData: AnalysisResult = await flaskResponse.json()
+      
+      showNotification("Analysis completed successfully!", "success")
       
       setTimeout(() => {
         setIsLoading(false)
-        onAnalyze()
-      }, 1000)
+        onAnalyze(analysisData)
+      }, 500)
     } catch (error) {
       setIsLoading(false)
-      showNotification("Error uploading files. Please try again.", "error")
-      console.error("Upload error:", error)
+      showNotification("Error analyzing resume. Please try again.", "error")
+      console.error("Analysis error:", error)
     }
   }
 

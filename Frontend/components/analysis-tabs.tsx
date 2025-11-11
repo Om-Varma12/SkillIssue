@@ -3,7 +3,34 @@
 import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
 
-export default function AnalysisTabs() {
+interface AnalysisResult {
+  overall_match_percent: number
+  skill_match_score_percent: number
+  experience_match_score_percent: number
+  keywords: {
+    matched: string[]
+    missing: string[]
+  }
+  experience: {
+    required_years: number
+    candidate_years: number
+  }
+  relevant_experience_highlights: string[]
+  ats: {
+    score_percent: number
+    label: string
+  }
+  top_resume_keywords: string[]
+  section_match_analysis: {
+    education: string
+    certifications: string
+    skills: string
+    experience: string
+    soft_skills: string
+  }
+}
+
+export default function AnalysisTabs({ analysisData }: { analysisData: AnalysisResult }) {
   const [activeTab, setActiveTab] = useState("skills")
 
   const tabs = [
@@ -12,6 +39,24 @@ export default function AnalysisTabs() {
     { id: "keywords", label: "Keywords & ATS" },
     { id: "breakdown", label: "Detailed Breakdown" },
   ]
+
+  const getMatchStatus = (status: string) => {
+    const normalized = status.toLowerCase()
+    if (normalized.includes("strong") || normalized === "matches") {
+      return "accent"
+    } else if (normalized.includes("partial")) {
+      return "warning"
+    }
+    return "accent"
+  }
+
+  const getMatchLabel = (status: string) => {
+    const normalized = status.toLowerCase()
+    if (normalized.includes("strong")) return "Strong Match"
+    if (normalized.includes("partial")) return "Partial Match"
+    if (normalized === "matches") return "Matches"
+    return status
+  }
 
   return (
     <div className="bg-card border border-border rounded-2xl overflow-hidden">
@@ -39,38 +84,51 @@ export default function AnalysisTabs() {
             <div>
               <h3 className="text-lg font-semibold text-foreground mb-4">Matched Skills</h3>
               <div className="flex flex-wrap gap-2">
-                {["React", "TypeScript", "Node.js", "Next.js", "Tailwind CSS", "REST APIs"].map((skill) => (
-                  <Badge key={skill} className="bg-accent/20 text-accent border-accent/30 hover:bg-accent/30">
-                    ✓ {skill}
-                  </Badge>
-                ))}
+                {analysisData.keywords.matched.length > 0 ? (
+                  analysisData.keywords.matched.map((skill) => (
+                    <Badge key={skill} className="bg-accent/20 text-accent border-accent/30 hover:bg-accent/30">
+                      ✓ {skill}
+                    </Badge>
+                  ))
+                ) : (
+                  <p className="text-muted-foreground text-sm">No matched skills found</p>
+                )}
               </div>
             </div>
 
             <div>
               <h3 className="text-lg font-semibold text-foreground mb-4">Missing Skills</h3>
               <div className="flex flex-wrap gap-2">
-                {["GraphQL", "Docker", "Kubernetes"].map((skill) => (
-                  <Badge
-                    key={skill}
-                    className="bg-destructive/20 text-destructive border-destructive/30 hover:bg-destructive/30"
-                  >
-                    ✗ {skill}
-                  </Badge>
-                ))}
+                {analysisData.keywords.missing.length > 0 ? (
+                  analysisData.keywords.missing.map((skill) => (
+                    <Badge
+                      key={skill}
+                      className="bg-destructive/20 text-destructive border-destructive/30 hover:bg-destructive/30"
+                    >
+                      ✗ {skill}
+                    </Badge>
+                  ))
+                ) : (
+                  <p className="text-muted-foreground text-sm">No missing skills</p>
+                )}
               </div>
             </div>
 
-            <div>
-              <h3 className="text-lg font-semibold text-foreground mb-4">Additional Skills</h3>
-              <div className="flex flex-wrap gap-2">
-                {["Python", "PostgreSQL", "AWS"].map((skill) => (
-                  <Badge key={skill} className="bg-primary/20 text-primary border-primary/30 hover:bg-primary/30">
-                    + {skill}
-                  </Badge>
-                ))}
+            {analysisData.top_resume_keywords.length > 0 && (
+              <div>
+                <h3 className="text-lg font-semibold text-foreground mb-4">Additional Skills from Resume</h3>
+                <div className="flex flex-wrap gap-2">
+                  {analysisData.top_resume_keywords
+                    .filter(skill => !analysisData.keywords.matched.includes(skill.toLowerCase()))
+                    .slice(0, 10)
+                    .map((skill) => (
+                      <Badge key={skill} className="bg-primary/20 text-primary border-primary/30 hover:bg-primary/30">
+                        + {skill}
+                      </Badge>
+                    ))}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         )}
 
@@ -79,29 +137,35 @@ export default function AnalysisTabs() {
             <div className="grid sm:grid-cols-2 gap-6">
               <div className="p-4 bg-muted rounded-lg">
                 <p className="text-sm text-muted-foreground mb-1">Required Experience</p>
-                <p className="text-2xl font-bold text-foreground">5+ years</p>
+                <p className="text-2xl font-bold text-foreground">
+                  {analysisData.experience.required_years}+ years
+                </p>
               </div>
-              <div className="p-4 bg-accent/10 border border-accent/20 rounded-lg">
+              <div className={`p-4 rounded-lg border ${
+                analysisData.experience.candidate_years >= analysisData.experience.required_years
+                  ? 'bg-accent/10 border-accent/20'
+                  : 'bg-warning/10 border-warning/20'
+              }`}>
                 <p className="text-sm text-muted-foreground mb-1">Candidate Experience</p>
-                <p className="text-2xl font-bold text-accent">6 years</p>
+                <p className={`text-2xl font-bold ${
+                  analysisData.experience.candidate_years >= analysisData.experience.required_years
+                    ? 'text-accent'
+                    : 'text-warning'
+                }`}>
+                  {analysisData.experience.candidate_years} years
+                </p>
               </div>
             </div>
 
             <div>
               <h3 className="text-lg font-semibold text-foreground mb-4">Relevant Experience Highlights</h3>
               <ul className="space-y-3">
-                <li className="flex gap-3 p-3 bg-muted rounded-lg">
-                  <span className="text-accent font-bold">✓</span>
-                  <span className="text-foreground">Led development of 3 full-stack applications</span>
-                </li>
-                <li className="flex gap-3 p-3 bg-muted rounded-lg">
-                  <span className="text-accent font-bold">✓</span>
-                  <span className="text-foreground">Managed teams of 2-5 developers</span>
-                </li>
-                <li className="flex gap-3 p-3 bg-muted rounded-lg">
-                  <span className="text-warning font-bold">~</span>
-                  <span className="text-foreground">Limited DevOps experience</span>
-                </li>
+                {analysisData.relevant_experience_highlights.map((highlight, index) => (
+                  <li key={index} className="flex gap-3 p-3 bg-muted rounded-lg">
+                    <span className="text-accent font-bold">✓</span>
+                    <span className="text-foreground">{highlight}</span>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
@@ -111,22 +175,23 @@ export default function AnalysisTabs() {
           <div className="space-y-6">
             <div className="p-4 bg-muted rounded-lg">
               <p className="text-sm text-muted-foreground mb-1">ATS Compatibility Score</p>
-              <p className="text-3xl font-bold text-foreground">92%</p>
-              <p className="text-xs text-muted-foreground mt-2">Excellent - Resume is well-optimized for ATS systems</p>
+              <p className="text-3xl font-bold text-foreground">
+                {Math.round(analysisData.ats.score_percent)}%
+              </p>
+              <p className="text-xs text-muted-foreground mt-2">
+                {analysisData.ats.label} - Resume is {analysisData.ats.label.toLowerCase()} for ATS systems
+              </p>
             </div>
 
             <div>
-              <h3 className="text-lg font-semibold text-foreground mb-4">Top Matched Keywords</h3>
+              <h3 className="text-lg font-semibold text-foreground mb-4">Top Resume Keywords</h3>
               <div className="space-y-2">
-                {[
-                  { keyword: "Full-stack development", count: 8 },
-                  { keyword: "React", count: 6 },
-                  { keyword: "API design", count: 5 },
-                  { keyword: "Database optimization", count: 4 },
-                ].map((item) => (
-                  <div key={item.keyword} className="flex justify-between items-center p-3 bg-muted rounded-lg">
-                    <span className="text-foreground">{item.keyword}</span>
-                    <span className="text-sm font-semibold text-primary">{item.count}x</span>
+                {analysisData.top_resume_keywords.slice(0, 10).map((keyword, index) => (
+                  <div key={keyword} className="flex justify-between items-center p-3 bg-muted rounded-lg">
+                    <span className="text-foreground capitalize">{keyword}</span>
+                    <span className="text-sm font-semibold text-primary">
+                      #{index + 1}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -136,22 +201,19 @@ export default function AnalysisTabs() {
 
         {activeTab === "breakdown" && (
           <div className="space-y-4">
-            {[
-              { section: "Education", match: "Matches", status: "accent" },
-              { section: "Certifications", match: "Partial Match", status: "warning" },
-              { section: "Soft Skills", match: "Matches", status: "accent" },
-              { section: "Technical Skills", match: "Strong Match", status: "accent" },
-            ].map((item) => (
-              <div key={item.section} className="flex justify-between items-center p-4 bg-muted rounded-lg">
-                <span className="font-medium text-foreground">{item.section}</span>
+            {Object.entries(analysisData.section_match_analysis).map(([section, match]) => (
+              <div key={section} className="flex justify-between items-center p-4 bg-muted rounded-lg">
+                <span className="font-medium text-foreground capitalize">
+                  {section.replace('_', ' ')}
+                </span>
                 <Badge
                   className={
-                    item.status === "accent"
+                    getMatchStatus(match) === "accent"
                       ? "bg-accent/20 text-accent border-accent/30"
                       : "bg-warning/20 text-warning border-warning/30"
                   }
                 >
-                  {item.match}
+                  {getMatchLabel(match)}
                 </Badge>
               </div>
             ))}

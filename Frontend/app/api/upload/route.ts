@@ -31,14 +31,15 @@ export async function POST(request: NextRequest) {
       await unlink(path.join(assetsDir, file))
     }
 
-    // Save the resume file
+    // Save the resume file with the format resume.{extension}
     const resumeBuffer = Buffer.from(await resumeFile.arrayBuffer())
-    const resumeFileName = `resume_${Date.now()}${path.extname(resumeFile.name)}`
+    const fileExtension = path.extname(resumeFile.name)
+    const resumeFileName = `resume${fileExtension}`
     const resumePath = path.join(assetsDir, resumeFileName)
     await writeFile(resumePath, resumeBuffer)
 
-    // Save the job description as a text file
-    const jobDescFileName = `job_description_${Date.now()}.txt`
+    // Save the job description as job.txt
+    const jobDescFileName = `job.txt`
     const jobDescPath = path.join(assetsDir, jobDescFileName)
     await writeFile(jobDescPath, jobDescription, "utf-8")
 

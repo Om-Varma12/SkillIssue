@@ -2,8 +2,36 @@
 
 import { useEffect, useState } from "react"
 
-export default function MatchScoreCard({ score }: { score: number }) {
+interface AnalysisResult {
+  overall_match_percent: number
+  skill_match_score_percent: number
+  experience_match_score_percent: number
+  keywords: {
+    matched: string[]
+    missing: string[]
+  }
+  experience: {
+    required_years: number
+    candidate_years: number
+  }
+  relevant_experience_highlights: string[]
+  ats: {
+    score_percent: number
+    label: string
+  }
+  top_resume_keywords: string[]
+  section_match_analysis: {
+    education: string
+    certifications: string
+    skills: string
+    experience: string
+    soft_skills: string
+  }
+}
+
+export default function MatchScoreCard({ analysisData }: { analysisData: AnalysisResult }) {
   const [displayScore, setDisplayScore] = useState(0)
+  const score = Math.round(analysisData.overall_match_percent)
 
   useEffect(() => {
     let current = 0
@@ -30,6 +58,12 @@ export default function MatchScoreCard({ score }: { score: number }) {
     if (score >= 60) return "Good Match"
     return "Fair Match"
   }
+
+  // Calculate keyword match percentage
+  const totalKeywords = analysisData.keywords.matched.length + analysisData.keywords.missing.length
+  const keywordMatchPercent = totalKeywords > 0 
+    ? Math.round((analysisData.keywords.matched.length / totalKeywords) * 100) 
+    : 0
 
   return (
     <div className="bg-card border border-border rounded-2xl p-8 sm:p-12">
@@ -86,12 +120,14 @@ export default function MatchScoreCard({ score }: { score: number }) {
             <div>
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm font-medium text-foreground">Skills Match</span>
-                <span className="text-sm font-semibold text-primary">85%</span>
+                <span className="text-sm font-semibold text-primary">
+                  {Math.round(analysisData.skill_match_score_percent)}%
+                </span>
               </div>
               <div className="w-full bg-border rounded-full h-2">
                 <div
                   className="bg-gradient-to-r from-primary to-secondary h-2 rounded-full"
-                  style={{ width: "85%" }}
+                  style={{ width: `${analysisData.skill_match_score_percent}%` }}
                 ></div>
               </div>
             </div>
@@ -99,12 +135,14 @@ export default function MatchScoreCard({ score }: { score: number }) {
             <div>
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm font-medium text-foreground">Experience Match</span>
-                <span className="text-sm font-semibold text-primary">72%</span>
+                <span className="text-sm font-semibold text-primary">
+                  {Math.round(analysisData.experience_match_score_percent)}%
+                </span>
               </div>
               <div className="w-full bg-border rounded-full h-2">
                 <div
                   className="bg-gradient-to-r from-primary to-secondary h-2 rounded-full"
-                  style={{ width: "72%" }}
+                  style={{ width: `${analysisData.experience_match_score_percent}%` }}
                 ></div>
               </div>
             </div>
@@ -112,12 +150,12 @@ export default function MatchScoreCard({ score }: { score: number }) {
             <div>
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm font-medium text-foreground">Keywords Match</span>
-                <span className="text-sm font-semibold text-primary">78%</span>
+                <span className="text-sm font-semibold text-primary">{keywordMatchPercent}%</span>
               </div>
               <div className="w-full bg-border rounded-full h-2">
                 <div
                   className="bg-gradient-to-r from-primary to-secondary h-2 rounded-full"
-                  style={{ width: "78%" }}
+                  style={{ width: `${keywordMatchPercent}%` }}
                 ></div>
               </div>
             </div>
